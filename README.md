@@ -1,12 +1,63 @@
-# React + Vite
+# tranqilo-react 🧘‍♂️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the React Single Page Application (SPA) frontend for the **tranqilo** health recovery app. It communicates with the corresponding Spring Boot backend to provide a modern, interactive user experience.
 
-Currently, two official plugins are available:
+**Backend Repository:** [joshinwien/tranqilo-backend](https://github.com/joshinwien/tranqilo-backend)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features (Planned)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+-   **JWT Authentication:** Secure login for clients and coaches.
+-   **Role-Based Dashboards:** Separate, tailored views for clients and coaches.
+-   **Real-time Messaging:** A dedicated inbox and conversation view for direct communication.
+-   **Client Check-Ins:** A form for clients to log their daily recovery metrics.
+
+---
+
+## 🛠 Tech Stack
+
+-   **Framework:** [React](https://reactjs.org/)
+-   **Build Tool:** [Vite](https://vitejs.dev/)
+-   **Styling:** Plain CSS / CSS Modules (can be extended with a UI library later)
+-   **API Client:** [Axios](https://axios-http.com/)
+-   **Routing:** [React Router](https://reactrouter.com/)
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to get the project running on your local machine for development and testing purposes.
+
+### Prerequisites
+
+You will need [Node.js](https://nodejs.org/) (version 20.x or higher) and `npm` installed on your machine.
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/joshinwien/tranqilo-react.git](https://github.com/joshinwien/tranqilo-react.git)
+    cd tranqilo-react
+    ```
+
+2.  **Install NPM packages:**
+    ```bash
+    npm install
+    ```
+
+3.  **Create a local environment file:**
+    Create a file named `.env.local` in the root of the project. This file will hold your local environment variables.
+
+4.  **Configure the API URL:**
+    Add the following line to your `.env.local` file. This tells the React app where to find your backend API.
+    ```
+    VITE_API_BASE_URL=http://localhost:8080
+    ```
+
+### Running the Application
+
+To start the local development server, run the following command:
+
+```bash
+npm run dev
