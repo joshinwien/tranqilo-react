@@ -1,0 +1,93 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const Dashboard = () => {
+    const { user } = useAuth();
+
+    if (!user) {
+        return <div className="p-6 text-center text-gray-500">Loading user data...</div>;
+    }
+
+    const QuickActions = () => (
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">Quick Actions</h2>
+            <div className="flex flex-col sm:flex-row gap-4">
+                {user.role === 'CLIENT' && (
+                    <Link to="/check-in" className="w-full text-center px-4 py-2 font-semibold text-white bg-green-500 rounded-md hover:bg-green-600">
+                        New Check-in
+                    </Link>
+                )}
+                <Link to="/inbox" className="w-full text-center px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                    View Inbox
+                </Link>
+            </div>
+        </div>
+    );
+
+    const CoachView = () => (
+        <div>
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Clients</h2>
+            {user.clients && user.clients.length > 0 ? (
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.clients.map(client => (
+                        <li key={client.id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                            <p className="font-bold text-gray-800">{client.firstName} {client.lastName}</p>
+                            <p className="text-sm text-gray-500">@{client.username}</p>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <div className="p-4 bg-white rounded-lg shadow-sm border text-center text-gray-500">
+                    You have no clients assigned.
+                </div>
+            )}
+        </div>
+    );
+
+    const ClientView = () => (
+        <div>
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Coach</h2>
+            {user.coach ? (
+                <div className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                    <p className="font-bold text-gray-800">{user.coach.firstName} {user.coach.lastName}</p>
+                    <p className="text-sm text-gray-500">@{user.coach.username}</p>
+                </div>
+            ) : (
+                <div className="p-4 bg-white rounded-lg shadow-sm border text-center text-gray-500">
+                    You are not yet assigned to a coach.
+                </div>
+            )}
+        </div>
+    );
+    
+    const PlaceholderCard = ({ title }) => (
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">{title}</h2>
+            <p className="text-gray-500">Data and charts will be displayed here in a future update.</p>
+        </div>
+    );
+
+    return (
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user.firstName}!</h1>
+            <p className="text-lg text-gray-600 mb-8">Here's your summary for today.</p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content Area */}
+                <div className="lg:col-span-2 space-y-8">
+                    {user.role === 'COACH' ? <CoachView /> : <ClientView />}
+                    <PlaceholderCard title="Recent Activity" />
+                </div>
+
+                {/* Sidebar Area */}
+                <div className="lg:col-span-1 space-y-8">
+                    <QuickActions />
+                    <PlaceholderCard title="Weekly Summary" />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Dashboard;
