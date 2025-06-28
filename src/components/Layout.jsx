@@ -8,9 +8,13 @@ export const Header = () => {
     return (
         <header className="bg-white shadow-sm">
             <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-                <Link to="/" className="text-xl font-bold text-indigo-600 hover:text-indigo-700">
-                    Tranqilo
-                </Link>
+                <div className="flex items-center gap-6">
+                    <Link to="/" className="text-xl font-bold text-indigo-600 hover:text-indigo-700">
+                        Tranqilo
+                    </Link>
+                    {/* Add a link to the profile page */}
+                    {user && <Link to="/profile" className="text-sm font-medium text-gray-600 hover:text-indigo-600">Profile</Link>}
+                </div>
                 <div>
                     {user && (
                         <button
