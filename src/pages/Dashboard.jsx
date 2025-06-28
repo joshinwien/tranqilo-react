@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import WellnessChart from '../components/WellnessChart.jsx'; // 1. Import the new chart component
+import WellnessChart from '../components/WellnessChart.jsx';
+import api from '../services/api';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -30,11 +31,14 @@ const Dashboard = () => {
         <div>
             <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Clients</h2>
             {user.clients && user.clients.length > 0 ? (
+                // UPDATE: Make each client a clickable link
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.clients.map(client => (
-                        <li key={client.id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                            <p className="font-bold text-gray-800">{client.firstName} {client.lastName}</p>
-                            <p className="text-sm text-gray-500">@{client.username}</p>
+                        <li key={client.id}>
+                            <Link to={`/clients/${client.id}`} className="block p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:border-indigo-500 hover:shadow-lg transition">
+                                <p className="font-bold text-gray-800">{client.firstName} {client.lastName}</p>
+                                <p className="text-sm text-gray-500">@{client.username}</p>
+                            </Link>
                         </li>
                     ))}
                 </ul>
@@ -46,21 +50,36 @@ const Dashboard = () => {
         </div>
     );
 
-    const ClientView = () => (
-        <div>
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Coach</h2>
-            {user.coach ? (
-                <div className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                    <p className="font-bold text-gray-800">{user.coach.firstName} {user.coach.lastName}</p>
-                    <p className="text-sm text-gray-500">@{user.coach.username}</p>
+    const ClientView = () => {
+        // Client now needs to fetch its own data to pass to the chart
+        const [checkIns, setCheckIns] = useState(null);
+        useEffect(() => {
+            api.get('/api/v1/check-ins/summary')
+                .then(res => setCheckIns(res.data))
+                .catch(err => console.error(err));
+        }, []);
+
+        return (
+            <div className="space-y-8">
+                <div>
+                    <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Coach</h2>
+                    {user.coach ? (
+                        <div className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                            <p className="font-bold text-gray-800">{user.coach.firstName} {user.coach.lastName}</p>
+                            <p className="text-sm text-gray-500">@{user.coach.username}</p>
+                        </div>
+                    ) : (
+                        <div className="p-4 bg-white rounded-lg shadow-sm border text-center text-gray-500">
+                            You are not yet assigned to a coach.
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div className="p-4 bg-white rounded-lg shadow-sm border text-center text-gray-500">
-                    You are not yet assigned to a coach.
+                 <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <WellnessChart checkInData={checkIns} />
                 </div>
-            )}
-        </div>
-    );
+            </div>
+        );
+    };
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -71,11 +90,6 @@ const Dashboard = () => {
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-8">
                     {user.role === 'COACH' ? <CoachView /> : <ClientView />}
-                    
-                    {/* 2. Replace a placeholder with the new chart */}
-                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                        {user.role === 'CLIENT' ? <WellnessChart /> : <p className="text-gray-500">Select a client to view their wellness chart.</p>}
-                    </div>
                 </div>
 
                 {/* Sidebar Area */}

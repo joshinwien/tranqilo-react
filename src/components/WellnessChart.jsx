@@ -10,7 +10,6 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import api from '../services/api';
 
 // Register the necessary components for Chart.js
 ChartJS.register(
@@ -23,48 +22,40 @@ ChartJS.register(
     Legend
 );
 
-const WellnessChart = () => {
+// The component now accepts check-in data as a prop
+const WellnessChart = ({ checkInData }) => {
     const [chartData, setChartData] = useState(null);
-    const [error, setError] = useState('');
 
     useEffect(() => {
-        const fetchChartData = async () => {
-            try {
-                const { data } = await api.get('/api/v1/check-ins/summary');
-                if (data && data.length > 0) {
-                    // Process the data for the chart
-                    const labels = data.map(d => new Date(d.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-                    const moodData = data.map(d => d.mood);
-                    const energyData = data.map(d => d.energy);
+        // Process the data when the prop is available
+        if (checkInData && checkInData.length > 0) {
+            const labels = checkInData.map(d => new Date(d.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const moodData = checkInData.map(d => d.mood);
+            const energyData = checkInData.map(d => d.energy);
 
-                    setChartData({
-                        labels,
-                        datasets: [
-                            {
-                                label: 'Mood',
-                                data: moodData,
-                                borderColor: 'rgb(75, 192, 192)',
-                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                tension: 0.1
-                            },
-                            {
-                                label: 'Energy',
-                                data: energyData,
-                                borderColor: 'rgb(255, 99, 132)',
-                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                                tension: 0.1
-                            },
-                        ],
-                    });
-                }
-            } catch (err) {
-                setError('Could not load chart data.');
-                console.error(err);
-            }
-        };
-
-        fetchChartData();
-    }, []);
+            setChartData({
+                labels,
+                datasets: [
+                    {
+                        label: 'Mood',
+                        data: moodData,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Energy',
+                        data: energyData,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        tension: 0.1
+                    },
+                ],
+            });
+        } else {
+            setChartData(null); // Clear chart if no data
+        }
+    }, [checkInData]); // Re-run this effect whenever the checkInData prop changes
 
     const options = {
         responsive: true,
@@ -85,8 +76,13 @@ const WellnessChart = () => {
         }
     };
 
-    if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
-    if (!chartData) return <div className="p-4 text-center text-gray-500">Loading chart...</div>;
+    if (!checkInData || checkInData.length === 0) {
+        return <div className="p-4 text-center text-gray-500">No recent check-in data to display.</div>;
+    }
+
+    if (!chartData) {
+        return <div className="p-4 text-center text-gray-500">Processing chart data...</div>;
+    }
 
     return <Line options={options} data={chartData} />;
 };
