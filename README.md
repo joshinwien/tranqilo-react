@@ -6,7 +6,7 @@ This repository contains the React Single Page Application (SPA) frontend for th
 
 ---
 
-## ✨ Features (Planned)
+## Features (Planned)
 
 -   **JWT Authentication:** Secure login for clients and coaches.
 -   **Role-Based Dashboards:** Separate, tailored views for clients and coaches.
@@ -15,7 +15,7 @@ This repository contains the React Single Page Application (SPA) frontend for th
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 -   **Framework:** [React](https://reactjs.org/)
 -   **Build Tool:** [Vite](https://vitejs.dev/)
@@ -25,7 +25,7 @@ This repository contains the React Single Page Application (SPA) frontend for th
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these instructions to get the project running on your local machine for development and testing purposes.
 
