@@ -23,6 +23,12 @@ const Dashboard = () => {
                 <Link to="/inbox" className="w-full text-center px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
                     View Inbox
                 </Link>
+                {/* Add Manage Clients button for coaches */}
+                {user.role === 'COACH' && (
+                    <Link to="/manage-clients" className="w-full text-center px-4 py-2 font-semibold text-white bg-purple-500 rounded-md hover:bg-purple-600">
+                        Manage Clients
+                    </Link>
+                )}
             </div>
         </div>
     );
@@ -31,7 +37,6 @@ const Dashboard = () => {
         <div>
             <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Clients</h2>
             {user.clients && user.clients.length > 0 ? (
-                // UPDATE: Make each client a clickable link
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.clients.map(client => (
                         <li key={client.id}>
@@ -51,7 +56,6 @@ const Dashboard = () => {
     );
 
     const ClientView = () => {
-        // Client now needs to fetch its own data to pass to the chart
         const [checkIns, setCheckIns] = useState(null);
         useEffect(() => {
             api.get('/api/v1/check-ins/summary')
@@ -87,12 +91,9 @@ const Dashboard = () => {
             <p className="text-lg text-gray-600 mb-8">Here's your summary for today.</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-8">
                     {user.role === 'COACH' ? <CoachView /> : <ClientView />}
                 </div>
-
-                {/* Sidebar Area */}
                 <div className="lg:col-span-1 space-y-8">
                     <QuickActions />
                 </div>

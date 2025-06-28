@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
           setUser(data);
         } catch (error) {
           console.error("Token is invalid, logging out.", error);
-          logout(); // If the token from storage is bad, log out
+          logout(); 
         }
       }
       setLoading(false);
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/api/auth/login', { username, password });
       const receivedToken = response.data.token;
       localStorage.setItem('authToken', receivedToken);
-      setToken(receivedToken); // This will trigger the useEffect to fetch the user
+      setToken(receivedToken);
       return true;
     } catch (error) {
       console.error('Login failed:', error);
@@ -37,10 +37,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // New function to update the user state without logging in again
-  const updateUserContext = (newUserData) => {
+  // Wrap this function in useCallback so it doesn't change on every render.
+  // The empty dependency array `[]` ensures it's created only once.
+  const updateUserContext = useCallback((newUserData) => {
     setUser(newUserData);
-  };
+  }, []);
 
   const logout = () => {
     localStorage.removeItem('authToken');
