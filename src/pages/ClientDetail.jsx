@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
-import WellnessChart from '../components/WellnessChart'; // Import our reusable chart
+import WellnessChart from '../components/WellnessChart';
 
 const ClientDetail = () => {
-    const { id: clientId } = useParams(); // Get client ID from the URL, e.g., /clients/1
+    const { id: clientId } = useParams();
+    const navigate = useNavigate();
     const [client, setClient] = useState(null);
     const [checkIns, setCheckIns] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,8 +13,8 @@ const ClientDetail = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
-                // Fetch both client details and check-in summary in parallel
                 const [clientRes, checkInsRes] = await Promise.all([
                     api.get(`/api/v1/clients/${clientId}`),
                     api.get(`/api/v1/clients/${clientId}/check-ins/summary`)
@@ -30,6 +31,20 @@ const ClientDetail = () => {
 
         fetchData();
     }, [clientId]);
+
+    const handleMessageClick = async () => {
+        if (!client) return;
+        try {
+            const response = await api.post('/api/v1/messaging/start', {
+                recipientUsername: client.username
+            });
+            const conversationId = response.data.id;
+            navigate(`/conversations/${conversationId}`);
+        } catch (error) {
+            console.error("Failed to start conversation", error);
+            setError("Could not start a conversation with this user.");
+        }
+    };
 
     if (loading) return <div className="p-6 text-center text-gray-500">Loading client details...</div>;
     if (error) return <div className="p-6 text-center text-red-500">{error}</div>;
@@ -54,9 +69,12 @@ const ClientDetail = () => {
                     <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-700 mb-4">Actions</h2>
                         <div className="flex flex-col gap-4">
-                            <Link to={`/inbox`} className="w-full text-center px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                            <button
+                                onClick={handleMessageClick}
+                                className="w-full text-center px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            >
                                 Message Client
-                            </Link>
+                            </button>
                             <button className="w-full text-center px-4 py-2 font-semibold text-white bg-red-500 rounded-md hover:bg-red-600">
                                 Remove Client
                             </button>
