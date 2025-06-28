@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import WellnessChart from '../components/WellnessChart.jsx'; // 1. Import the new chart component
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -60,13 +61,6 @@ const Dashboard = () => {
             )}
         </div>
     );
-    
-    const PlaceholderCard = ({ title }) => (
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">{title}</h2>
-            <p className="text-gray-500">Data and charts will be displayed here in a future update.</p>
-        </div>
-    );
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -77,13 +71,16 @@ const Dashboard = () => {
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-8">
                     {user.role === 'COACH' ? <CoachView /> : <ClientView />}
-                    <PlaceholderCard title="Recent Activity" />
+                    
+                    {/* 2. Replace a placeholder with the new chart */}
+                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        {user.role === 'CLIENT' ? <WellnessChart /> : <p className="text-gray-500">Select a client to view their wellness chart.</p>}
+                    </div>
                 </div>
 
                 {/* Sidebar Area */}
                 <div className="lg:col-span-1 space-y-8">
                     <QuickActions />
-                    <PlaceholderCard title="Weekly Summary" />
                 </div>
             </div>
         </div>
