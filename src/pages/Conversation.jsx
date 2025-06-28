@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const Conversation = () => {
     const { id } = useParams();
     const { user } = useAuth();
-    const [conversation, setConversation] = useState(null); // Will hold the entire conversation object
+    const [conversation, setConversation] = useState(null);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -31,7 +31,7 @@ const Conversation = () => {
         e.preventDefault();
         if (!newMessage.trim() || !conversation) return;
 
-        // Find the recipient from the conversation participants list
+        // Reliably find the recipient from the participants list
         const recipient = conversation.participants.find(p => p.username !== user.username);
 
         if (!recipient) {
@@ -45,7 +45,7 @@ const Conversation = () => {
                 content: newMessage,
             });
             setNewMessage('');
-            // Refetch messages to show the new one immediately
+            // Refetch conversation to show the new message
             const { data } = await api.get(`/api/v1/messaging/conversations/${id}`);
             setConversation(data);
         } catch (err) {
@@ -55,7 +55,7 @@ const Conversation = () => {
 
     if (loading) return <div className="p-6 text-center text-gray-500">Loading messages...</div>;
     if (error) return <div className="p-6 text-center text-red-500">{error}</div>;
-    if (!conversation) return null; // Or some other placeholder
+    if (!conversation) return null;
 
     const messages = conversation.messages || [];
 

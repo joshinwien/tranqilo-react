@@ -8,7 +8,6 @@ const ManageClients = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // This useEffect will now run only once when the component first mounts.
     useEffect(() => {
         const fetchInitialData = async () => {
             setLoading(true);
@@ -23,27 +22,28 @@ const ManageClients = () => {
             }
         };
         fetchInitialData();
-    }, []); // Empty dependency array ensures this runs only once.
-
+    }, []);
 
     const refreshData = async () => {
         try {
+            // Fetch both lists concurrently
             const [unassignedRes, meRes] = await Promise.all([
                 api.get('/api/v1/users/unassigned'),
                 api.get('/api/v1/users/me')
             ]);
             setUnassignedClients(unassignedRes.data);
+            // Update the user context with the latest data, which includes the updated client list
             updateUserContext(meRes.data);
         } catch (err) {
-             console.error('Failed to refresh data:', err);
-             setError('Could not refresh client lists.');
+            console.error('Failed to refresh data:', err);
+            setError('Could not refresh client lists.');
         }
     }
 
     const handleAddClient = async (clientUsername) => {
         try {
             await api.post('/api/v1/coach/clients', { clientUsername });
-            await refreshData(); // After adding, refresh all data.
+            await refreshData(); // Refresh all data after the action
         } catch (err) {
             console.error('Failed to add client:', err);
             setError('Could not add the client.');
@@ -53,7 +53,7 @@ const ManageClients = () => {
     const handleRemoveClient = async (clientUsername) => {
         try {
             await api.delete(`/api/v1/coach/clients/${clientUsername}`);
-            await refreshData(); // After removing, refresh all data.
+            await refreshData(); // Refresh all data after the action
         } catch (err) {
             console.error('Failed to remove client:', err);
             setError('Could not remove the client.');
